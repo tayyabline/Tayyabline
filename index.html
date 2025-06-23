@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>TayyabLine</title>
+  <style>
+    body { background-color: #121212; color: white; font-family: Arial; padding: 20px; }
+    #messages { height: 300px; overflow-y: scroll; border: 1px solid #333; padding: 10px; }
+    input, button { padding: 5px; }
+  </style>
+</head>
+<body>
+  <h2>TayyabLine Chat</h2>
+  <div id="messages"></div>
+  <input id="msg" type="text" placeholder="Enter message...">
+  <button onclick="sendMessage()">Send</button>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    let username = prompt("Enter your username:");
+    let password = prompt("Enter password:");
+    socket.emit("join", { username, password });
+
+    socket.on("unauthorized", () => alert("Wrong password"));
+
+    socket.on("message", msg => {
+      const el = document.createElement("div");
+      el.textContent = msg.username + ": " + msg.text;
+      document.getElementById("messages").appendChild(el);
+    });
+
+    function sendMessage() {
+      const msg = document.getElementById("msg").value;
+      socket.emit("message", msg);
+      document.getElementById("msg").value = "";
+    }
+  </script>
+</body>
+</html>
